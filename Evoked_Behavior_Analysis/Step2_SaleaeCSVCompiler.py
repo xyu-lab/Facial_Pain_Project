@@ -5,9 +5,21 @@ from tkinter import filedialog
 import os
 import re
 
+# Script Authors:    Darian Mohsenin
+# Date: 3/23/2026
 
-# ----- Combine Digital & Analog files and extract stimulus-delivery events -----
+# About:
+# Takes both csv files (digital & analog) from Saleae logic analyzer to pull out stimulus delivery events
+# ====================================================================
+# Update Log:
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
 
+# ====================================================================
+# SCRIPT BELOW
+
+# ====================================================================
+# COMBINE DIGITAL & ANALOG FILES, EXTRACT STIMULUS-DELIVERY EVENTS
+# ====================================================================
 # Code for converting voltage readings of the stimulus potentiometer into actual stimulus values
 def voltage_to_stimulus(voltage):
     """Convert voltage to stimulus type"""
@@ -93,7 +105,6 @@ def process_hits_column(frames_df, analog_df, hit_col, output_dir, round_id=""):
 # ====================================================================
 # MAIN
 # ====================================================================
-
 def main():
     print("Saleae Digital & Analog Data Compiler")
     print("="*40)
@@ -106,7 +117,7 @@ def main():
     digital_file_path = filedialog.askopenfilename(
         title="Select digital.csv",
         filetypes=[("CSV files", "*.csv")],
-        initialdir= r"I:\Projects\orofacial_project\data\evoked\raw_files",
+        initialdir= r"I:\Projects",
     )
     if not digital_file_path:
         print("No digital.csv file selected.")
@@ -116,7 +127,7 @@ def main():
     analog_file_path = filedialog.askopenfilename(
         title="Select analog.csv",
         filetypes=[("CSV files", "*.csv")],
-         initialdir= r"I:\Projects\orofacial_project\data\evoked\raw_files",
+         initialdir= r"I:\Projects",
     )
     if not analog_file_path:
         print("No analog.csv file selected.")

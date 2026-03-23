@@ -2,11 +2,22 @@ import pandas as pd
 import numpy as np
 import os
 
-# ----- CONFIGURATION -----
-# ====================================================================
-INPUT_BASE_DIR = r"I:\Projects\orofacial_project\analysis\evoked\large_csv_files"
-OUTPUT_DIR = r"I:\Projects\orofacial_project\analysis\evoked\summary_csv_files\expanded_features"
+# Script Authors:    Darian Mohsenin
+# Date: 3/23/2026
 
+# About:
+# Extract behavior features from the long read csv file
+# ====================================================================
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
+
+# ====================================================================
+# SCRIPT BELOW
+
+# ====================================================================
+# USER CONFIGURATION
+# ====================================================================
 FPS = 62  # Match your video capture rate, MAKE SURE TO CHECK THIS!!
 stim_frame = 2100  # 1050 or 2100 or 3600 (EARLIEST PROJECT DATA WAS 1050 or 3600!!) 
 
@@ -19,6 +30,30 @@ ACTIVE_THRESH = 5 # mm/s
 SIDE_ORDER = ['Right', 'Left']
 
 # ====================================================================
+# FIND EXPERIMENT FOLDER
+# ====================================================================
+def get_project_paths():
+    project_type_input = input(
+        "Are you working on Trigeminal Neuralgia project (1) or TMJ project (2) (enter 1 or 2): "
+    ).strip()
+
+    project_type = int(project_type_input)
+
+    if project_type == 1:
+        INPUT_BASE_DIR = r"I:\Projects\orofacial_project\analysis\evoked\large_csv_files"
+        OUTPUT_DIR = r"I:\Projects\orofacial_project\analysis\evoked\summary_csv_files"
+
+
+    elif project_type == 2:
+        INPUT_BASE_DIR = r"I:\Projects\tmj_project\analysis\evoked\large_csv_files"
+        OUTPUT_DIR = r"I:\Projects\tmj_project\analysis\evoked\summary_csv_files"
+
+
+    else:
+        raise ValueError("Invalid project selection")
+
+    return INPUT_BASE_DIR, OUTPUT_DIR
+
 
 def find_experiment_csv(base_dir: str, number_input: str):
     """
@@ -46,7 +81,7 @@ def find_experiment_csv(base_dir: str, number_input: str):
         print(f"ERROR: No CSV file found starting with '{prefix}' in {base_dir}")
         return None
 
-def get_experiment_csv_path():
+def get_experiment_csv_path(INPUT_BASE_DIR):
     """
     Prompts user for ID, finds the CSV, and returns the full path.
     """
@@ -130,10 +165,13 @@ def calculate_features(group):
         'trial_tracking_quality': avg_likelihood
     })
 
-
+# ====================================================================
+# MAIN
+# ====================================================================
 def main():
     while True:
-        INPUT_FILE = get_experiment_csv_path()
+        INPUT_BASE_DIR, OUTPUT_DIR = get_project_paths()
+        INPUT_FILE = get_experiment_csv_path(INPUT_BASE_DIR)
 
         if INPUT_FILE == "QUIT" or INPUT_FILE is None:
             return  # Exit  if user quits or file isn't found

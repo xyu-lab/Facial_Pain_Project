@@ -3,9 +3,22 @@ import numpy as np
 import os
 import sys
 
-# ==============================================================================
+# Script Authors:    Darian Mohsenin & Google Gemini
+# Date: 3/23/2026
+
+# About:
+# Called by Step6 script (Ketypoint_Metrics), contains kinematic math. Written by Darian Mohsenin in R studio, Gemini used to convert to Python to match analysis pipeline.
+# ====================================================================
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
+
+# ====================================================================
+# SCRIPT BELOW
+
+# ====================================================================
 # CONSTANTS
-# ==============================================================================
+# ====================================================================
 K_VAL = 11  
 LIKELIHOOD_THRESHOLD = 0.5
 LIKELIHOOD_THRESHOLD_PAWS = 0.2
@@ -16,7 +29,6 @@ MM_PER_PX = 1.0 / 6.86
 # MATH! MATH! MATH! 
 # Originally written in R because it was easier for me, adapted to Python to fit with rest of analysis pipeline
 # ====================================================================
-
 def calculate_movement_median(df, bodypart, fps, mm_per_pixel):
     """
     1. Likelihood filtering
@@ -79,7 +91,6 @@ def calculate_movement_median(df, bodypart, fps, mm_per_pixel):
 # ====================================================================
 # MAIN
 # ====================================================================
-
 def main(input_dir, fps, mm_per_pixel, start_f=None, end_f=None):
     # Walk through directory looking for 'cleaned_csvs'
     csv_files = []

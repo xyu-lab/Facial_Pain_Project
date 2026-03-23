@@ -7,12 +7,22 @@ from tkinter import filedialog
 from tkinter import ttk
 import re 
 
+# Script Authors:    Darian Mohsenin & Google Gemini
+# Date: 3/23/2026
 
+# About:
+# Manually validate stimulus delivery events by finding 'frame of stimulation'. This script corrects mistakes in data collection (ex. wrong stimulus logged, wrong side of stimulaton logged, etc)
+# ====================================================================
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
+
+# ====================================================================
+# SCRIPT BELOW
 
 # ====================================================================
 # FRAME CORRECTION OF STIMULUS VIDEOS
 # ====================================================================
-
 def read_csv(file_path):
     """Read the CSV file into a pandas DataFrame."""
     if not os.path.exists(file_path):
@@ -106,11 +116,9 @@ def save_corrected_frame(corrected_frames, df, output_csv, updated_hit_counts):
         print("No corrected frames to save.")
 
 
-
 # ====================================================================
-# DIRECTORY/FILE SELECTION
+# DIRECTORY/FILE SELECTION & TKINTER GUI CODE
 # ====================================================================
-
 # Tkinter based GUI 
 class VideoCorrectionApp:
     # Class-level dictionary to store details for easy lookup

@@ -1,21 +1,44 @@
 import os
 import pandas as pd
 
+# Script Authors:    Darian Mohsenin
+# Date: 3/23/2026
 
-# ----- USER CONFIGURATION -----
+# About:
+# Concatenates kinematic data from all mice/trials into a single long read csv for analysis
 # ====================================================================
-# Hardcoded base directory where all experiment folders reside.
-INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\evoked\processed_files"
-# Hardcoded evoked analysis folder to deposit large CSV
-OUTPUT_DIR = r"I:\Projects\orofacial_project\analysis\evoked\large_csv_files"
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
 
 # ====================================================================
-
-
+# SCRIPT BELOW
 
 # ====================================================================
 # FIND EXPERIMENT FOLDER
 # ====================================================================
+def get_project_paths():
+    project_type_input = input(
+        "Are you working on Trigeminal Neuralgia project (1) or TMJ project (2) (enter 1 or 2): "
+    ).strip()
+
+    project_type = int(project_type_input)
+
+    if project_type == 1:
+        INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\evoked\processed_files"
+        OUTPUT_DIR = r"I:\Projects\orofacial_project\analysis\evoked\large_csv_files"
+
+
+    elif project_type == 2:
+        INPUT_BASE_DIR = r"I:\Projects\tmj_project\data\evoked\processed_files"
+        OUTPUT_DIR = r"I:\Projects\tmj_project\analysis\evoked\large_csv_files"
+
+
+    else:
+        raise ValueError("Invalid project selection")
+
+    return INPUT_BASE_DIR, OUTPUT_DIR
+
 
 def find_experiment_folder(base_dir: str, number_input: str):
     """
@@ -45,7 +68,7 @@ def find_experiment_folder(base_dir: str, number_input: str):
         return None
 
 
-def get_experiment_folder_path():
+def get_experiment_folder_path(INPUT_BASE_DIR):
     """
     Prompts the user for a 3-digit Experiment ID, finds the corresponding 
     experiment folder within the hardcoded INPUT_BASE_DIR, and returns 
@@ -85,7 +108,6 @@ def get_experiment_folder_path():
 # ====================================================================
 # MAIN
 # ====================================================================
-
 def main():
     # user inputs
     print("DeepLabCut output CSV compiler (experiment.csv)")
@@ -94,7 +116,9 @@ def main():
     print("="*40)
     protocol_number = 306     # Orofacial Pain Protocol number
     # Extract date and treatment from the root directory name
-    root_dir = get_experiment_folder_path()
+    INPUT_BASE_DIR, OUTPUT_DIR = get_project_paths()
+
+    root_dir = get_experiment_folder_path(INPUT_BASE_DIR)
     folder_name = os.path.basename(root_dir)
     parts = folder_name.rsplit('_', 4)
     if len(parts) == 5:

@@ -5,17 +5,23 @@ from tqdm import tqdm
 import glob
 from typing import Optional
 
-# Run this with deeplabcut environment!!!!!!!!!!!
+# Script Authors:    Darian Mohsenin
+# Date: 3/23/2026
 
-
-# ----- USER CONFIGURATION -----
+# About:
+# Batch DeepLabCut(DLC) labelling script. Run this with deeplabcut environment!!!!!!!!!!!
 # ====================================================================
-# Base directories
-evoked_INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\evoked\processed_files"
-spont_INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\spontaneous\raw_files"
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
 
-# Select which set of videos to analyze
-INPUT_BASE_DIR = evoked_INPUT_BASE_DIR
+
+# ====================================================================
+# SCRIPT BELOW
+
+# ====================================================================
+# USER CONFIGURATION
+# ====================================================================
 
 # DeepLabCut project path (Change this if needed!!)
 DLC_PROJECT_PATH = r"C:\Users\dmohsenin\Desktop\DeepLabCut\FEBcam03-Darian-2025-02-24"
@@ -26,13 +32,29 @@ CREATE_NEW_VIDEO = True
 PCUTOFF = 0.0  # Set to 0 so all model predictions are displayed
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi') # Can add more extensions if needed, analysis was completed with .avi files
 
-# ====================================================================
-
-
 
 # ====================================================================
 # FIND EXPERIMENT FOLDER
 # ====================================================================
+def get_project_paths():
+    project_type_input = input(
+        "Are you working on Trigeminal Neuralgia project (1) or TMJ project (2) (enter 1 or 2): ").strip()
+
+    project_type = int(project_type_input)
+
+    if project_type == 1:
+        evoked_INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\evoked\processed_files"
+        spont_INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\spontaneous\raw_files"
+
+
+    elif project_type == 2:
+        evoked_INPUT_BASE_DIR = r"I:\Projects\tmj_project\data\evoked\processed_files"
+        spont_INPUT_BASE_DIR = r"I:\Projects\tmj_project\data\spontaneous\raw_files"
+
+    else:
+        raise ValueError("Invalid project selection")
+
+    return evoked_INPUT_BASE_DIR, spont_INPUT_BASE_DIR
 
 def find_experiment_folder(base_dir: str, number_input: str) -> Optional[str]:
     """Finds a folder starting with ExpXXX where XXX is number_input."""
@@ -72,7 +94,6 @@ def find_videos_recursive(exp_dir):
 # ====================================================================
 # DEEPLABCUT ANALYSIS SCRIPT
 # ====================================================================
-
 def analyze_videos_and_create_csv(exp_dir, config_file, create_new_video, pcutoff):
     """Analyzes videos with DLC and converts h5 outputs to CSV."""
     exp_dir = os.path.normpath(exp_dir)
@@ -124,7 +145,6 @@ def analyze_videos_and_create_csv(exp_dir, config_file, create_new_video, pcutof
 # ====================================================================
 # MAIN
 # ====================================================================
-
 def main():
     """Main workflow for DLC video analysis."""
     if not os.path.exists(CONFIG_FILE):
@@ -133,6 +153,11 @@ def main():
 
     print(f"Using DLC Config: {CONFIG_FILE}")
     print(f"Video creation: {'ON' if CREATE_NEW_VIDEO else 'OFF'} (pcutoff={PCUTOFF})")
+
+    evoked_INPUT_BASE_DIR, spont_INPUT_BASE_DIR = get_project_paths()
+    
+    # HARDCODED evoked analysis (switch to 'spont_INPUT_BASE_DIR' for spont analysis)
+    INPUT_BASE_DIR = evoked_INPUT_BASE_DIR
 
     # Ask user for experiment ID
     number_input = input("Enter the 3-digit Experiment ID (e.g., '001'): ").strip()

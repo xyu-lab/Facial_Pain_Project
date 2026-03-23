@@ -3,25 +3,21 @@ import shutil
 import csv
 from pathlib import Path
 
-# ----- USER CONFIGURATION -----
-# ====================================================================
-# Base directory where transferred experiment folders land
-INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data"
+# Script Authors:    Darian Mohsenin
 
-# Metadata file  that tracks all Experiments
-GLOBAL_METADATA_PATH = os.path.join(
-    INPUT_BASE_DIR,
-    'OPexperiment_metadata.csv'
-)
+# About:
+# Used for transfering data files from an external drive to the machine running analysis
+# ====================================================================
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
 
 # ====================================================================
-
-
+# SCRIPT BELOW
 
 # ====================================================================
 # FIND EXPERIMENT FOLDER
 # ====================================================================
-
 def get_existing_folders(metadata_path: str):
     """Reads the existing full_folder_name entries from the metadata CSV to prevent duplicates."""
     existing_folders = set()
@@ -40,6 +36,10 @@ def get_existing_folders(metadata_path: str):
             pass
     return existing_folders
 
+
+# ====================================================================
+# UPDATE METAFILE
+# ====================================================================
 def update_global_metadata_csv(exp_folder_name: str, metadata_path: str, has_evoked_data: bool, has_spontaneous_data: bool):
     """
     Parses the experiment folder name and appends the data to the global metadata CSV,
@@ -95,7 +95,7 @@ def update_global_metadata_csv(exp_folder_name: str, metadata_path: str, has_evo
                 
             writer.writerow(experiment_data)
         
-        print(f"Added {exp_folder_name} to the orofacial pain experiment list!")
+        print(f"Added {exp_folder_name} to the experiment list!")
 
     except Exception as e:
         print(f"ERROR: Failed to update global metadata CSV: {e}")
@@ -103,18 +103,29 @@ def update_global_metadata_csv(exp_folder_name: str, metadata_path: str, has_evo
 # ====================================================================
 # FILE TRANSFER LOGIC
 # ====================================================================
-
-def transfer_vf_experiment(experiment_id):
+def transfer_vf_experiment(project_type, experiment_id):
     """
     Transfers specific experiment files from a source experiment directory (External Drive) to a local machine,
     creating destination folders (Evoked/Spontaneous) only if the corresponding data types are present, and
     updates the global metadata CSV with the experiment info.
     """
-
-    # Source & deposit (root) paths, edit if on new machine or directory structure!!!
     source_root = Path(r"J:\Projects\orofacial_pain_project\data\orofacial_pain_setup\raw_files")
-    target_evoked_root = Path(r"I:\Projects\orofacial_project\data\evoked\raw_files")
-    target_spontaneous_root = Path(r"I:\Projects\orofacial_project\data\spontaneous\raw_files")
+
+    # FACIAL PAIN PROJECT
+    # Source & deposit (root) paths, edit if on new machine or directory structure!!!
+    if project_type == 1:
+        target_evoked_root = Path(r"I:\Projects\orofacial_project\data\evoked\raw_files")
+        target_spontaneous_root = Path(r"I:\Projects\orofacial_project\data\spontaneous\raw_files")
+        
+        metadata_path = Path(r"I:\Projects\orofacial_project\data\OPexperiment_metadata.csv")
+
+    # TMJ PROJECT
+    # Source & deposit (root) paths, edit if on new machine or directory structure!!!
+    if project_type == 2:
+        target_evoked_root = Path(r"I:\Projects\tmj_project\data\evoked\raw_files")
+        target_spontaneous_root = Path(r"I:\Projects\tmj_project\data\spontaneous\raw_files")
+
+        metadata_path = Path(r"I:\Projects\tmj_project\data\TMJexperiment_metadata.csv")
 
     # Find the correct source directory
     source_dir = None
@@ -194,25 +205,28 @@ def transfer_vf_experiment(experiment_id):
     print("\nFile Transfer complete.")
     
     # Update metadata with data presence flags
-    update_global_metadata_csv(exp_folder_name, GLOBAL_METADATA_PATH, has_evoked_data, has_spontaneous_data)
+    update_global_metadata_csv(exp_folder_name, metadata_path, has_evoked_data, has_spontaneous_data)
 
 
 # ====================================================================
 # MAIN
 # ====================================================================
-
 def main():
     print("Orofacial Pain Experiment File Transfer Tool")
     print("="*40)
     while True:
-        experiment_id = input("Enter the experiment ID you wish to transfer (ex. '001' for Exp001): ").strip()
+
+        project_type_input = input("Are you transferring data files from Trigeminal Neuralgia project (1) or TMJ project (2) (enter 1 or 2): ").strip()
+        project_type = int(project_type_input.strip())
+
+        experiment_id = input(f"\nEnter the experiment ID you wish to transfer (ex. '001' for Exp001): ").strip()
         print("="*40)
         
         if not experiment_id.isdigit():
             print("ERROR: Input must be the numeric part of the experiment ID (e.g., '001').")
-            return
+            continue
             
-        transfer_vf_experiment(experiment_id.zfill(3))
+        transfer_vf_experiment(project_type, experiment_id.zfill(3))
         run_again = input("Do you wish to transfer another experiment folder (yes/no): ").strip()
         if run_again != 'yes':
             print("Process Complete! :) ")

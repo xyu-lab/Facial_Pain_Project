@@ -6,19 +6,43 @@ import sys
 import shutil
 from typing import Optional
 
+# Script Authors:    Darian Mohsenin
+# Date: 3/23/2026
 
-# ----- USER CONFIGURATION -----
+# About:
+# Calculate kinematic values from DLC csv files
+# ====================================================================
+# Update Log:
+# 3/15/2026: Updated input/ouput selection/file paths to work for other orofacial pain studies going on in the lab
+# 3/23/2026: Added authorship, date, authorship, & update log to formalize script
 
-# Hardcoded base directory where all experiment folders reside.
-INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\evoked\processed_files"
 
 # ====================================================================
-
-
+# SCRIPT BELOW
 
 # ====================================================================
 # FIND EXPERIMENT FOLDER
 # ====================================================================
+def get_project_paths():
+    project_type_input = input(
+        "Are you working on Trigeminal Neuralgia project (1) or TMJ project (2) (enter 1 or 2): "
+    ).strip()
+
+    project_type = int(project_type_input)
+
+    if project_type == 1:
+        INPUT_BASE_DIR = r"I:\Projects\orofacial_project\data\evoked\processed_files"
+
+
+    elif project_type == 2:
+        INPUT_BASE_DIR = r"I:\Projects\tmj_project\data\evoked\processed_files"
+
+
+    else:
+        raise ValueError("Invalid project selection")
+
+    return INPUT_BASE_DIR
+
 
 def find_experiment_folder(base_dir: str, number_input: str) -> Optional[str]:
     """
@@ -47,7 +71,7 @@ def find_experiment_folder(base_dir: str, number_input: str) -> Optional[str]:
         print(f"ERROR: No folder found starting with '{prefix}' in {base_dir}")
         return None
 
-def get_experiment_folder_path() -> Optional[str]:
+def get_experiment_folder_path(INPUT_BASE_DIR) -> Optional[str]:
     """
     Prompts the user for a 3-digit Experiment ID, finds the corresponding 
     experiment folder within the hardcoded INPUT_BASE_DIR, and returns 
@@ -160,7 +184,6 @@ def update_headers(input_csv_path, output_csv_path):
 # ====================================================================
 # CONSOLIDATE DEEPLABCUT OUTPUTS INTO "dlc_outputs" FOLDER
 # ====================================================================
-
 def find_data_directories(input_dir, ignore_parent_folders=None):
     """
     Finds all unique directories containing DLC output CSV files within the input_dir.
@@ -290,7 +313,6 @@ def process_directory(input_directory, ignore_subfolder_names=None):
 # ====================================================================
 # CALL "metrics_calculations_script" TO DO KINEMATIC MATH
 # ====================================================================
-
 def run_dist_vel_acc(output_directory):
     """Runs the external motion analysis script on the cleaned data."""
     try:
@@ -321,7 +343,6 @@ def run_dist_vel_acc(output_directory):
 # ====================================================================
 # MAIN
 # ====================================================================
-
 def main():
     print("="*70)
     print("DeepLabCut Outputs Organizer, Cleaner, & Kinematics Calculator")
@@ -336,7 +357,10 @@ def main():
     IGNORE_SUBFOLDERS_WITHIN_DATA = ["bad_videos", "dlc_outputs"] 
 
     while True:
-        input_dir = get_experiment_folder_path()
+
+        INPUT_BASE_DIR = get_project_paths()
+
+        input_dir = get_experiment_folder_path(INPUT_BASE_DIR)
         if input_dir.lower() == 'quit':
             break
 
